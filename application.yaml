@@ -1,33 +1,34 @@
 eureka:
- instance:
-   prefer-ip-address: true
- client:
-   fetch-registry: true
-   register-with-eureka: true
-   service-url:
-     defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true  # Service discovery ke liye service ka IP address prefer karega
+  client:
+    fetch-registry: true  # Eureka server se registered services ki list fetch karega
+    register-with-eureka: true  # Khud ko Eureka server pe register karega
+    service-url:
+      defaultZone: http://localhost:8761/eureka  # Eureka server ka address (Eureka server ka default port 8761 hota hai)
+
 resilience4j:
   circuitbreaker:
     instances:
-      RatingBreaker:
-        registerHealthIndicator: true
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        permittedNumberOfCallsInHalfOpenState: 3
-        waitDurationInOpenState: 10s
-        failureRateThreshold: 50
-        register-health-indicator: true
-        automatic-transition-from-open-to-half-open-enabled: true
-        sliding-window-type: COUNT_BASED
+      RatingBreaker:  # Circuit breaker ka naam (is breaker ko use karne ke liye @CircuitBreaker annotation me yahi naam dena hoga)
+        registerHealthIndicator: true  # Circuit breaker ka health status expose karega
+        slidingWindowSize: 10  # Sliding window ka size (kitne requests analyze honge)
+        minimumNumberOfCalls: 5  # Circuit breaker ko open hone se pehle minimum 5 requests analyze karni hongi
+        permittedNumberOfCallsInHalfOpenState: 3  # Half-open state me 3 requests allow hongi
+        waitDurationInOpenState: 10s  # Circuit breaker open hone ke baad 10 seconds tak closed rahega
+        failureRateThreshold: 50  # Agar 50% se zyada failures honge to circuit breaker open ho jayega
+        register-health-indicator: true  # Actuator health endpoint pe circuit breaker ka status dikhane ke liye
+        automatic-transition-from-open-to-half-open-enabled: true  # Open se Half-open state me automatic transition enable karega
+        sliding-window-type: COUNT_BASED  # Sliding window count-based hogi (time-based bhi ho sakti hai)
 
 management:
   health:
     circuitbreakers:
-      enabled: true
+      enabled: true  # Circuit breakers ka health status check karne ke liye Actuator enable karega
   endpoints:
     web:
       exposure:
-        include: health
+        include: health  # Health endpoint ko expose karega (http://localhost:port/actuator/health)
   endpoint:
     health:
-      show-details: always
+      show-details: always  # Health endpoint me sare details show karega (UP/DOWN status ke saath reason bhi)
